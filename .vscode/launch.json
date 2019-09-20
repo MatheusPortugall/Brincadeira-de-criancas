@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - Criancas",
+      "request": "launch",
+      "mainClass": "criancas.Criancas",
+      "projectName": "Brincadeira-de-criancas_2754ac8b"
+    }
+  ]
+}
