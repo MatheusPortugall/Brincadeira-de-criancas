@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class Crianca extends Thread {
 
-  public static void main(String[] args) {
+  /*public static void main(String[] args) {
       private int K;
       private int id;
       private int Tb;
@@ -61,6 +61,6 @@ public class Crianca extends Thread {
           ie.printStackTrace();
         }
       }
-    }
+    }*/
 
 }

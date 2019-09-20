@@ -11,7 +11,7 @@ import java.util.concurrent.Semaphore;
  *
  */
 public class Cesto {
-  private Semaphore mensagens;
+  /*private Semaphore mensagens;
   private Semaphore capacidade;
 
   private List<CestoListener> listeners = new ArrayList<>();
@@ -28,7 +28,7 @@ public class Cesto {
    * @param numeroMensagens número de mensagens para serem retiradas da caixa
    * @throws InterruptedException caso a thread seja morta
    */
-  public void pegarMensagens(int numeroMensagens) throws InterruptedException {
+  /*public void pegarMensagens(int numeroMensagens) throws InterruptedException {
     bolas.acquire(numeroMensagens);
     capacidade.release(numeroMensagens);
 
@@ -43,7 +43,7 @@ public class Cesto {
    *
    * @throws InterruptedException caso a thread seja morta
    */
-  public void inserirMensagem() throws InterruptedException {
+  /*public void inserirMensagem() throws InterruptedException {
     capacidade.acquire(1);
     bolas.release(1);
 
@@ -62,5 +62,5 @@ public class Cesto {
 
   public void addCestoListener(CestoListener listener) {
     this.listeners.add(listener);
-  }
+  }*/
 }
