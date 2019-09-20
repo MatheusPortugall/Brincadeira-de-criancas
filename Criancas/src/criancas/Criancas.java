@@ -16,7 +16,7 @@ public class Criancas extends Thread {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JFrame frame = new MainFrame("Crianças brincando");
-                frame.setSize(new Dimension(900, 300));
+                frame.setSize(new Dimension(1000, 300));
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setVisible(true);
             }
