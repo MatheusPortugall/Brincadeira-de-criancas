@@ -43,7 +43,7 @@ public class MainFrame extends JFrame {
         c.add(button);
         
         button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e){  
                 String tempoBrincando = Tb.getText();
                 String tempoQuieto = Tq.getText();
                 String nomeCrianca = nome.getText();
@@ -75,6 +75,19 @@ public class MainFrame extends JFrame {
                     crianca.start();
                     Timer tempo = new Timer();
                     
+                    /*
+                    
+                    private void busyWaitLoop(int millis) throws InterruptedException {
+                            long current = System.currentTimeMillis();
+
+                            while(current + millis > System.currentTimeMillis()) {
+                                    if(isInterrupted()) {
+                                            throw new InterruptedException();
+                                    }
+                            }
+                    }
+                    */
+                    
                     String textoPadrao = 
                         "Nome: "+ crianca.getNome() + "\n" + "Tempo de brincadeira: " + crianca.getTempoBrincando() +
                          "Tempo quieta: "+ crianca.getTempoQuieta() + "\n"
@@ -86,6 +99,10 @@ public class MainFrame extends JFrame {
                         public void run(){
                             String textoStatus = textoPadrao + crianca.getStatusCrianca() + "\n";
                             novaCrianca.setText(textoStatus);
+                            String capacidadeAtual = "\n" + "Capacidade atual: " + crianca.getCapacidadeAtual();
+                            String capacidadeTotal = "\n" + "Capacidade máxima:" + crianca.getCapacidadeCesto();
+                            novaCrianca.append(capacidadeAtual);
+                            novaCrianca.append(capacidadeTotal);
                             crianca.executaStatusCrianca();
                         }
                     };
