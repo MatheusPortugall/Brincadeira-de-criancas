@@ -9,11 +9,9 @@ import java.util.concurrent.Semaphore;
 
 public class MainFrame extends JFrame {
     
-    public boolean seTemValoresIniciais = false;
-    
     public MainFrame(String title){
         super(title);
-        
+        //Início configurações de layout do JFrame
         setLayout(new FlowLayout());
         
         JLabel labelNome = new JLabel("Nome");
@@ -42,6 +40,9 @@ public class MainFrame extends JFrame {
         c.add(cesto);
         c.add(button);
         
+        //Final configurações de layout do JFrame
+        
+        //Ação disparada após apertar o botão
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){  
                 String tempoBrincando = Tb.getText();
@@ -67,7 +68,7 @@ public class MainFrame extends JFrame {
                     int valorQuantidadeCesto = Integer.parseInt(quantidadeCesto);
                     boolean statusValue = comBola.isSelected() ? true : false;
                     String status = comBola.isSelected() ? "Com bola" : "Sem bola";
-                    Crianca crianca = new Crianca(valorQuantidadeCesto);
+                    Crianca crianca = new Crianca(valorQuantidadeCesto); //cria a crianca
                     crianca.setTempoBrincando(valorTempoBrincando);
                     crianca.setTempoQuieta(valorTempoQuieto);
                     crianca.setNome(nomeCrianca);
@@ -75,44 +76,29 @@ public class MainFrame extends JFrame {
                     crianca.start();
                     Timer tempo = new Timer();
                     
-                    /*
-                    
-                    private void busyWaitLoop(int millis) throws InterruptedException {
-                            long current = System.currentTimeMillis();
-
-                            while(current + millis > System.currentTimeMillis()) {
-                                    if(isInterrupted()) {
-                                            throw new InterruptedException();
-                                    }
-                            }
-                    }
-                    */
-                    
-                    String textoPadrao = 
-                        "Nome: "+ crianca.getNome() + "\n" + "Tempo de brincadeira: " + crianca.getTempoBrincando() +
-                         "Tempo quieta: "+ crianca.getTempoQuieta() + "\n"
-                    ;
-                    novaCrianca.append(textoPadrao);
                     TimerTask tarefa = new TimerTask(){
 
                         @Override
                         public void run(){
-                            String textoStatus = textoPadrao + crianca.getStatusCrianca() + "\n";
-                            novaCrianca.setText(textoStatus);
-                            String capacidadeAtual = "\n" + "Capacidade atual: " + crianca.getCapacidadeAtual();
-                            String capacidadeTotal = "\n" + "Capacidade máxima:" + crianca.getCapacidadeCesto();
-                            novaCrianca.append(capacidadeAtual);
-                            novaCrianca.append(capacidadeTotal);
-                            crianca.executaStatusCrianca();
+                            novaCrianca.setText("");
+                            String espacoDisponivel = "\n" + "Disponivel: " + crianca.getEspacoDisponivel();
+                            String espacoOcupado = "\n" + "Ocupado:" + crianca.getEspacoOcupado();
+                            novaCrianca.append("Nome: "+ crianca.getNome() + "\n");
+                            novaCrianca.append("Tempo de brincadeira: " + crianca.getTempoBrincando() + "\n");
+                            novaCrianca.append("Tempo quieta: "+ crianca.getTempoQuieta() + "\n");
+                            novaCrianca.append(crianca.getStatusCrianca() + "\n");
+                            novaCrianca.append(espacoDisponivel + "\n");
+                            novaCrianca.append(espacoOcupado);
                         }
                     };
-                    tempo.scheduleAtFixedRate(tarefa, crianca.getTempo(), crianca.getTempo());
+                    tempo.scheduleAtFixedRate(tarefa, 0, 1000);
                 }
             }
         });
+        //Final da ação disparada após apertar o botão
     }
     
-    public static boolean isNumeric(String strNum) {
+    public static boolean isNumeric(String strNum) { //Verifica se o número é inteiro
         try {
             double d = Double.parseDouble(strNum);
         } catch (NumberFormatException | NullPointerException nfe) {
@@ -121,20 +107,11 @@ public class MainFrame extends JFrame {
         return true;
     }
     
-    public static void setWarningMsg(String text){
+    public static void setWarningMsg(String text){ // Mostra a mensagem de erro se o usuário digitar um valor inválido
         Toolkit.getDefaultToolkit().beep();
         JOptionPane optionPane = new JOptionPane(text,JOptionPane.WARNING_MESSAGE);
         JDialog dialog = optionPane.createDialog("Valor inválido!");
         dialog.setAlwaysOnTop(true);
         dialog.setVisible(true);
     }
-    
-    public boolean getSeTemValoresIniciais(){
-        return this.seTemValoresIniciais;
-    }
-    
-    public void setSeTemValoresIniciais(boolean seTemValoresIniciais){
-        this.seTemValoresIniciais = seTemValoresIniciais;
-    }
-
 }
