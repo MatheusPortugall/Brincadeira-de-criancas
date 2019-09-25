@@ -28,10 +28,16 @@ public class Crianca extends Thread {
         espacoDisponivel = new Semaphore(capacidadeCesto);
     }
     
-    @Override
     public void run(){
         try {
             while(true) {
+                    //setStatusBola(true);
+                    criancaBrincando();
+                    busyWaitLoop(this.tempoBrincando);
+                    armazenaBola();
+                    criancaQuieta();
+                    busyWaitLoop(this.tempoQuieta);
+                    pegarBola();
                 /*
                     capacidadeAtual.acquire();
                     capacidadeMaxima.release();
@@ -41,19 +47,19 @@ public class Crianca extends Thread {
                     armazenaBola();
                     criancaQuieta();
                     busyWaitLoop(this.tempoQuieta);
-                */
-               // System.out.println("CAPACIDADE: " + capacidadeAtual.availablePermits());
-                if(statusBola==true){
+               
+                System.out.println("CAPACIDADE: " + capacidadeAtual.availablePermits());
+                if(getStatusBola()==true){
                     criancaBrincando();
                     busyWaitLoop(tempoBrincando);
                     armazenaBola();
                     criancaQuieta();
-                } else if(statusBola==false){
+                } else if(getStatusBola()==false){
                     criancaQuieta();
                     busyWaitLoop(tempoQuieta);
                     pegarBola();
                     criancaBrincando();
-                }
+                } */
             }
         }
         catch (Exception e) {
@@ -66,12 +72,12 @@ public class Crianca extends Thread {
     
     public void criancaBrincando(){
         setStatusCrianca(getNome() + " está brincando."); 
-        System.out.println(getNome() + " está brincando.");
+        //System.out.println(getNome() + " está brincando.");
     }
     
     public void criancaQuieta(){
         setStatusCrianca(getNome() + " está quieta.");
-        System.out.println(getNome() + " está quieta.");
+        //System.out.println(getNome() + " está quieta.");
     }
     
     /**
