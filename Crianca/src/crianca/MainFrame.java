@@ -65,7 +65,8 @@ public class MainFrame extends JFrame {
                         return;
                 } else {
                     cesto.setEditable(false);
-                    JTextArea novaCrianca = new JTextArea();
+                    JTextArea novaCrianca = new JTextArea(5, 20);
+                    novaCrianca.setEditable(false);
                     c.add(novaCrianca);
                     int valorTempoQuieto = Integer.parseInt(tempoQuieto);
                     int valorTempoBrincando = Integer.parseInt(tempoBrincando);
@@ -78,7 +79,9 @@ public class MainFrame extends JFrame {
                     crianca.setNome(nomeCrianca);
                     crianca.setStatusBola(statusValue);
                     crianca.start();
-                    
+                    nome.setText("");
+                    Tb.setText("");
+                    Tq.setText("");
                     Timer tempo = new Timer();
                     
                     TimerTask tarefa = new TimerTask(){
@@ -86,7 +89,7 @@ public class MainFrame extends JFrame {
                         @Override
                         public void run(){
                             novaCrianca.setText("");
-                            valorCesto.setText("");
+                            valorCesto.setText("Quantidade de bolas no cesto:");
                             valorCesto.setText("Quantidade de bolas no cesto: " + crianca.getEspacoOcupado());
                             String espacoDisponivel = "\n" + "Disponivel: " + crianca.getEspacoDisponivel();
                             String espacoOcupado = "\n" + "Ocupado:" + crianca.getEspacoOcupado();

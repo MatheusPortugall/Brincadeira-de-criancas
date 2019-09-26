@@ -86,9 +86,9 @@ public class Crianca extends Thread {
              System.out.println("..Parou de esperar");
          }
         espacoOcupado.acquire();
-          espacoDisponivel.release(); 
-         System.out.println(getNome() + " está brincando.");
-         setStatusCrianca(getNome() + " está brincando.");
+        espacoDisponivel.release(); 
+        System.out.println(getNome() + " está brincando.");
+        setStatusCrianca(getNome() + " está brincando.");
         System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
     }
     
@@ -190,7 +190,9 @@ public class Crianca extends Thread {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JFrame frame = new MainFrame("Crianças brincando");
-                frame.setSize(new Dimension(200, 800));
+                //frame.setSize(new Dimension(200, 800));
+                frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+                frame.setUndecorated(true);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setVisible(true);
             }
