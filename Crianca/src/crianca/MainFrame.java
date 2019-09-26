@@ -19,6 +19,8 @@ public class MainFrame extends JFrame {
         JLabel labelTq = new JLabel("Tempo quieta");
         JLabel labelCesto = new JLabel("Capacidade do cesto");
         
+        JTextField valorCesto = new JTextField("Quantidade de bolas no cesto: 0", 20);
+        
         JCheckBox comBola = new JCheckBox("Com Bola");
         JCheckBox semBola = new JCheckBox("Sem Bola");
         JTextField nome = new JTextField(10);
@@ -39,6 +41,8 @@ public class MainFrame extends JFrame {
         c.add(labelCesto);
         c.add(cesto);
         c.add(button);
+        c.add(valorCesto);
+        valorCesto.setEditable(false);
         
         //Final configurações de layout do JFrame
         
@@ -74,6 +78,7 @@ public class MainFrame extends JFrame {
                     crianca.setNome(nomeCrianca);
                     crianca.setStatusBola(statusValue);
                     crianca.start();
+                    
                     Timer tempo = new Timer();
                     
                     TimerTask tarefa = new TimerTask(){
@@ -81,14 +86,16 @@ public class MainFrame extends JFrame {
                         @Override
                         public void run(){
                             novaCrianca.setText("");
+                            valorCesto.setText("");
+                            valorCesto.setText("Quantidade de bolas no cesto: " + crianca.getEspacoOcupado());
                             String espacoDisponivel = "\n" + "Disponivel: " + crianca.getEspacoDisponivel();
                             String espacoOcupado = "\n" + "Ocupado:" + crianca.getEspacoOcupado();
                             novaCrianca.append("Nome: "+ crianca.getNome() + "\n");
                             novaCrianca.append("Tempo de brincadeira: " + crianca.getTempoBrincando() + "\n");
                             novaCrianca.append("Tempo quieta: "+ crianca.getTempoQuieta() + "\n");
                             novaCrianca.append(crianca.getStatusCrianca() + "\n");
-                            novaCrianca.append(espacoDisponivel + "\n");
-                            novaCrianca.append(espacoOcupado);
+                          //  novaCrianca.append(espacoDisponivel + "\n");
+                          //  novaCrianca.append(espacoOcupado);
                         }
                     };
                     tempo.scheduleAtFixedRate(tarefa, 0, 1000);

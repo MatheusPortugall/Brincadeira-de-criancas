@@ -19,65 +19,52 @@ public class Crianca extends Thread {
     public int tempoQuieta;
     public boolean statusBola;
     public String statusCrianca;
-    private static Semaphore espacoDisponivel; //Quantos espaços disponiveis tem no cesto
-    private static Semaphore espacoOcupado; //Quantas bolas tem no cesto
-    private int tempo;
+    public static Semaphore espacoDisponivel; //Quantos espaços disponiveis tem no cesto
+    public static Semaphore espacoOcupado; //Quantas bolas tem no cesto
+    public boolean primeiraVez=true;
     
     public Crianca(int capacidadeCesto){
         espacoOcupado  = new Semaphore(0);
-        espacoDisponivel = new Semaphore(capacidadeCesto);
+        espacoDisponivel = new Semaphore(10);
     }
     
     public void run(){
         try {
+            if(this.primeiraVez){
+                setStatusCrianca(getNome() + " está quieta.");
+                busyWaitLoop(getTempoQuieta()*1000);
+                this.primeiraVez = false;
+            }
             while(true) {
-                    //setStatusBola(true);
-                    criancaBrincando();
-                    busyWaitLoop(this.tempoBrincando);
-                    armazenaBola();
-                    criancaQuieta();
-                    busyWaitLoop(this.tempoQuieta);
-                    pegarBola();
-                /*
-                    capacidadeAtual.acquire();
-                    capacidadeMaxima.release();
-                    setStatusBola(true);
-                    criancaBrincando();
-                    busyWaitLoop(this.tempoBrincando);
-                    armazenaBola();
-                    criancaQuieta();
-                    busyWaitLoop(this.tempoQuieta);
-               
-                System.out.println("CAPACIDADE: " + capacidadeAtual.availablePermits());
                 if(getStatusBola()==true){
                     criancaBrincando();
-                    busyWaitLoop(tempoBrincando);
-                    armazenaBola();
-                    criancaQuieta();
+                    setStatusBola(false);
                 } else if(getStatusBola()==false){
                     criancaQuieta();
-                    busyWaitLoop(tempoQuieta);
-                    pegarBola();
-                    criancaBrincando();
-                } */
+                    setStatusBola(true);
+                } 
             }
         }
-        catch (Exception e) {
+        catch (InterruptedException e) {
             System.out.println("Error: " + e.getMessage());
         } 
         finally {
-            //System.out.println("Carregando próximo estado...");
+           //
         }
     }
     
-    public void criancaBrincando(){
-        setStatusCrianca(getNome() + " está brincando."); 
-        //System.out.println(getNome() + " está brincando.");
+    public void criancaBrincando() throws InterruptedException {
+        /*System.out.println(getNome() + " está brincando.");
+        System.out.println("CESTO: " + getEspacoOcupado());*/
+        busyWaitLoop(getTempoBrincando()*1000);
+        armazenaBola();
     }
     
-    public void criancaQuieta(){
-        setStatusCrianca(getNome() + " está quieta.");
-        //System.out.println(getNome() + " está quieta.");
+    public void criancaQuieta() throws InterruptedException {
+        /*System.out.println(getNome() + " está quieta.");
+        System.out.println("CESTO: " + getEspacoOcupado());*/
+        busyWaitLoop(getTempoQuieta()*1000);
+        pegarBola();
     }
     
     /**
@@ -87,27 +74,22 @@ public class Crianca extends Thread {
     * @throws InterruptedException caso a thread seja morta
     */
     
-    public void pegarBola() {
+    public void pegarBola() throws InterruptedException {
         
-        try {
-            System.out.println("pegando bola");
-           if(espacoOcupado.availablePermits() == 0){
-                String status = getNome() + " aguardando bola.";
-                System.out.println(getNome() + " aguardando bola.");
-                System.out.println("Espaco OCUPADO no cesto: " + getEspacoOcupado());
-                System.out.println("Espaco DISPONIVEL no cesto: " + getEspacoDisponivel());
-                this.setStatusCrianca(status);
-                this.setTempo(this.tempo);
-            } 
-            espacoOcupado.acquire();
-            espacoDisponivel.release();
-            setStatusBola(true);
-        } catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-           // System.out.println("Carregando próximo estado...");
-        }
-        
+        if(espacoOcupado.availablePermits() == 0){
+             String status = getNome() + " aguardando bola.";
+             System.out.println(getNome() + " aguardando bola.");
+             this.setStatusCrianca(status);
+             System.out.println("Esperando..");
+             System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
+             //esperaBolaNoCesto();
+             System.out.println("..Parou de esperar");
+         }
+        espacoOcupado.acquire();
+          espacoDisponivel.release(); 
+         System.out.println(getNome() + " está brincando.");
+         setStatusCrianca(getNome() + " está brincando.");
+        System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
     }
     
     /**
@@ -117,26 +99,18 @@ public class Crianca extends Thread {
     * @throws InterruptedException caso a thread seja morta
     */
     
-    public void armazenaBola() {
-        try {
-            System.out.println("guardando bola");
-            if(espacoOcupado.availablePermits() == espacoDisponivel.availablePermits()){
-                String status = getNome() + " aguardando espaço no cesto.";
-                System.out.println(status);
-                this.setStatusCrianca(status);
-            }
-            espacoOcupado.release();
-            espacoDisponivel.acquire();
-            setStatusBola(false);
-        } catch (Exception e){
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-           // System.out.println("Carregando próximo estado...");
+    public void armazenaBola() throws InterruptedException {
+        if(espacoDisponivel.availablePermits() == 0){
+            String status = getNome() + " aguardando lugar vazio no cesto.";
+            System.out.println(status);
+            this.setStatusCrianca(status);
+            //esperaEspacoNoCesto();
         }
-    }
-    
-    public int getTempo(){
-        return this.tempo;
+        espacoDisponivel.acquire();
+        espacoOcupado.release();
+        System.out.println(getNome() + " está quieta.");
+        setStatusCrianca(getNome() + " está quieta.");
+        System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
     }
     
     public String getStatusCrianca(){
@@ -167,10 +141,6 @@ public class Crianca extends Thread {
         return this.statusBola;
     }
     
-    public void setTempo(int tempo){
-        this.tempo = tempo * 1000;
-    }
-    
     public void setStatusCrianca(String statusCrianca){
         this.statusCrianca = statusCrianca;
     }
@@ -191,9 +161,25 @@ public class Crianca extends Thread {
         this.statusBola = statusBola;
     }
     
-     private void busyWaitLoop(int millis) throws InterruptedException { //tempo de processamento
+    public void busyWaitLoop(int millis) throws InterruptedException { //tempo de processamento
         long current = System.currentTimeMillis();
         while(current + millis > System.currentTimeMillis()) {
+            if(isInterrupted()) {
+                throw new InterruptedException();
+            }
+        }
+    }
+     
+    public void esperaEspacoNoCesto() throws InterruptedException {
+        while(espacoDisponivel.availablePermits() == 0){
+            if(isInterrupted()) {
+                throw new InterruptedException();
+            }
+        }
+    }
+    
+    public void esperaBolaNoCesto() throws InterruptedException {
+        while(espacoOcupado.availablePermits() == 0){
             if(isInterrupted()) {
                 throw new InterruptedException();
             }
