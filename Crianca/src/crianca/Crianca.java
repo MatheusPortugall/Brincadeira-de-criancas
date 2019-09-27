@@ -21,11 +21,16 @@ public class Crianca extends Thread {
     private String statusCrianca;
     public static Semaphore espacoDisponivel; //Quantos espaços disponiveis tem no cesto
     public static Semaphore espacoOcupado; //Quantas bolas tem no cesto
-    private boolean primeiraVez=true;
+    public static boolean primeiraVez=true;
     
     public Crianca(int capacidadeCesto){
-        espacoOcupado  = new Semaphore(0);
-        espacoDisponivel = new Semaphore(capacidadeCesto);
+        if(this.primeiraVez){
+            espacoOcupado  = new Semaphore(0);
+            System.out.println(capacidadeCesto);
+            espacoDisponivel = new Semaphore(capacidadeCesto);
+            this.primeiraVez = false;
+        }
+        
     }
     
     public void run(){
@@ -36,16 +41,22 @@ public class Crianca extends Thread {
                 this.primeiraVez = false;
             }*/
             while(true) {
-                if(getStatusBola()==true){
+                if(this.getStatusBola()==true){
+                    System.out.println(getNome() + " Esta com bola");
                     this.setStatusCrianca(getNome() + " está brincando.");
-                    System.out.println(getNome() + " CESTO: " + espacoOcupado.availablePermits());
-                    criancaBrincando();
-                    setStatusBola(false);
-                } else if(getStatusBola()==false){
+                    //System.out.println(getNome() + " CESTO: " + espacoOcupado.availablePermits());
+                    busyWaitLoop(this.getTempoBrincando()*1000);
+                    armazenaBola();
+                    
+                } else if(this.getStatusBola()==false){
+                    System.out.println(getNome() + " Esta sem bola");
+
                     this.setStatusCrianca(getNome() + " está quieta.");
-                    System.out.println(getNome() + " CESTO: " + espacoOcupado.availablePermits());
-                    criancaQuieta();
-                    setStatusBola(true);
+                    //System.out.println(getNome() + " CESTO: " + espacoOcupado.availablePermits());
+                    //this.criancaQuieta();
+                    busyWaitLoop(this.getTempoQuieta()*1000);
+                    pegarBola();
+                    
                 } 
             }
         }
@@ -57,20 +68,6 @@ public class Crianca extends Thread {
         }
     }
     
-    public void criancaBrincando() throws InterruptedException {
-        /*System.out.println(getNome() + " está brincando.");
-        System.out.println("CESTO: " + getEspacoOcupado());*/
-        busyWaitLoop(getTempoBrincando()*1000);
-        armazenaBola();
-    }
-    
-    public void criancaQuieta() throws InterruptedException {
-        /*System.out.println(getNome() + " está quieta.");
-        System.out.println("CESTO: " + getEspacoOcupado());*/
-        busyWaitLoop(getTempoQuieta()*1000);
-        pegarBola();
-    }
-    
     /**
     * Pega uma bola do cesto. Bloqueia a thread 
     * caso o cesto esteja vazio.
@@ -79,21 +76,16 @@ public class Crianca extends Thread {
     */
     
     public void pegarBola() throws InterruptedException {
-        
         if(espacoOcupado.availablePermits() == 0){
-             String status = getNome() + " aguardando bola.";
-             System.out.println(getNome() + " aguardando bola.");
-             this.setStatusCrianca(status);
-             System.out.println("Esperando..");
-             //System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
-             //esperaBolaNoCesto();
-             System.out.println("..Parou de esperar");
-         }
+            String status = getNome() + " aguardando bola.";
+            //System.out.println(getNome() + " aguardando bola.");
+            this.setStatusCrianca(status);
+        }
         espacoOcupado.acquire();
+        this.setStatusBola(true);
         espacoDisponivel.release(); 
-        System.out.println(getNome() + " está brincando.");
+        //System.out.println(getNome() + " está brincando.");
         setStatusCrianca(getNome() + " está brincando.");
-        //System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
     }
     
     /**
@@ -110,15 +102,16 @@ public class Crianca extends Thread {
             this.setStatusCrianca(status);
             //esperaEspacoNoCesto();
         }
-        
-        System.out.println("Espaco disponivel: " + espacoDisponivel.availablePermits() );
-        System.out.println("Espaco ocupado: " + espacoOcupado.availablePermits() );
-
+        System.out.println("Armazena Bola - Espaco disponivel antes: " + espacoDisponivel.availablePermits() );
+        //System.out.println("Espaco ocupado: " + espacoOcupado.availablePermits() );
+        System.out.println("Armazena Bola - Espaco ocupado antes: " + espacoOcupado.availablePermits() );
         espacoDisponivel.acquire();
+        this.setStatusBola(false);
         espacoOcupado.release();
+        System.out.println("Armazena Bola - Espaco disponivel depois: " + espacoDisponivel.availablePermits() );
+        System.out.println("Espaco ocupado depois: " + espacoOcupado.availablePermits() );
         System.out.println(getNome() + " está quieta.");
         setStatusCrianca(getNome() + " está quieta.");
-        //System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
     }
     
     public String getStatusCrianca(){
@@ -169,7 +162,7 @@ public class Crianca extends Thread {
         this.statusBola = statusBola;
     }
     
-    public void busyWaitLoop(int millis) throws InterruptedException { //tempo de processamento
+    private void busyWaitLoop(int millis) throws InterruptedException { //tempo de processamento
         long current = System.currentTimeMillis();
         while(current + millis > System.currentTimeMillis()) {
             if(isInterrupted()) {
@@ -198,7 +191,6 @@ public class Crianca extends Thread {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JFrame frame = new MainFrame("Crianças brincando");
-                //frame.setSize(new Dimension(200, 800));
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
                 frame.setUndecorated(true);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
