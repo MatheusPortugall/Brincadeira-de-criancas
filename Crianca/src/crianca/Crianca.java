@@ -14,32 +14,36 @@ import java.util.concurrent.Semaphore;
  */
 public class Crianca extends Thread {
 
-    public String nome;
-    public int tempoBrincando;
-    public int tempoQuieta;
-    public boolean statusBola;
-    public String statusCrianca;
+    private String nome;
+    private int tempoBrincando;
+    private int tempoQuieta;
+    private boolean statusBola;
+    private String statusCrianca;
     public static Semaphore espacoDisponivel; //Quantos espaços disponiveis tem no cesto
     public static Semaphore espacoOcupado; //Quantas bolas tem no cesto
-    public boolean primeiraVez=true;
+    private boolean primeiraVez=true;
     
     public Crianca(int capacidadeCesto){
         espacoOcupado  = new Semaphore(0);
-        espacoDisponivel = new Semaphore(10);
+        espacoDisponivel = new Semaphore(capacidadeCesto);
     }
     
     public void run(){
         try {
-            if(this.primeiraVez){
-                setStatusCrianca(getNome() + " está quieta.");
+            /*if(this.primeiraVez){
+                this.setStatusCrianca(getNome() + " está quieta.");
                 busyWaitLoop(getTempoQuieta()*1000);
                 this.primeiraVez = false;
-            }
+            }*/
             while(true) {
                 if(getStatusBola()==true){
+                    this.setStatusCrianca(getNome() + " está brincando.");
+                    System.out.println(getNome() + " CESTO: " + espacoOcupado.availablePermits());
                     criancaBrincando();
                     setStatusBola(false);
                 } else if(getStatusBola()==false){
+                    this.setStatusCrianca(getNome() + " está quieta.");
+                    System.out.println(getNome() + " CESTO: " + espacoOcupado.availablePermits());
                     criancaQuieta();
                     setStatusBola(true);
                 } 
@@ -81,7 +85,7 @@ public class Crianca extends Thread {
              System.out.println(getNome() + " aguardando bola.");
              this.setStatusCrianca(status);
              System.out.println("Esperando..");
-             System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
+             //System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
              //esperaBolaNoCesto();
              System.out.println("..Parou de esperar");
          }
@@ -89,7 +93,7 @@ public class Crianca extends Thread {
         espacoDisponivel.release(); 
         System.out.println(getNome() + " está brincando.");
         setStatusCrianca(getNome() + " está brincando.");
-        System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
+        //System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
     }
     
     /**
@@ -106,11 +110,15 @@ public class Crianca extends Thread {
             this.setStatusCrianca(status);
             //esperaEspacoNoCesto();
         }
+        
+        System.out.println("Espaco disponivel: " + espacoDisponivel.availablePermits() );
+        System.out.println("Espaco ocupado: " + espacoOcupado.availablePermits() );
+
         espacoDisponivel.acquire();
         espacoOcupado.release();
         System.out.println(getNome() + " está quieta.");
         setStatusCrianca(getNome() + " está quieta.");
-        System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
+        //System.out.println(getNome() + " CESTO: " + getEspacoOcupado());
     }
     
     public String getStatusCrianca(){
