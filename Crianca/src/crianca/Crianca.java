@@ -58,6 +58,8 @@ public class Crianca extends Thread {
                     pegarBola();
                     
                 } 
+		System.out.println(this.getStatusBola());
+
             }
         }
         catch (InterruptedException e) {
